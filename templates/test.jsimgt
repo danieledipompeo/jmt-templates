@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jsimgt version="2">
+    <meta author="daniele" date="2026-11-25" description="dasdas" name="test" version="1.0"/>
+    <parameters/>
+    <model>
+        <archive jmtVersion="1.5.0" name="test">
+            <sim disableStatisticStop="false" maxEvents="-1" maxSamples="1000000" name="test" polling="1.0">
+                <node name="Fork_1">
+                    <section className="Queue">
+                        <parameter classPath="java.lang.Integer" name="size">
+                            <value>-1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.String" name="dropStrategies"/>
+                        <parameter classPath="NetStrategies.QueueGetStrategies.FCFSstrategy" name="FCFSstrategy"/>
+                        <parameter array="true" classPath="NetStrategies.QueuePutStrategy" name="QueuePutStrategy"/>
+                    </section>
+                    <section className="ServiceTunnel"/>
+                    <section className="Fork">
+                        <parameter classPath="java.lang.Integer" name="jobsPerLink">
+                            <value>1</value>
+                        </parameter>
+                        <parameter classPath="java.lang.Integer" name="block">
+                            <value>-1</value>
+                        </parameter>
+                        <parameter classPath="java.lang.Boolean" name="isSimplifiedFork">
+                            <value>true</value>
+                        </parameter>
+                        <parameter array="true" classPath="NetStrategies.ForkStrategy" name="ForkStrategy"/>
+                    </section>
+                </node>
+                <node name="Queue 0">
+                    <classSoftDeadlines/>
+                    <quantumSize>
+                        <quantaSize>0.0</quantaSize>
+                    </quantumSize>
+                    <quantumSwitchoverTime>
+                        <quantumSwitchoverTime>0.0</quantumSwitchoverTime>
+                    </quantumSwitchoverTime>
+                    <section className="Queue">
+                        <parameter classPath="java.lang.Integer" name="size">
+                            <value>-1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.String" name="dropStrategies"/>
+                        <parameter classPath="NetStrategies.QueueGetStrategies.FCFSstrategy" name="FCFSstrategy"/>
+                        <parameter array="true" classPath="NetStrategies.QueuePutStrategy" name="QueuePutStrategy"/>
+                    </section>
+                    <section className="Server">
+                        <parameter classPath="java.lang.Integer" name="maxJobs">
+                            <value>1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.Integer" name="numberOfVisits"/>
+                        <parameter array="true" classPath="NetStrategies.ServiceStrategy" name="ServiceStrategy"/>
+                        <parameter classPath="java.util.HashMap" map="true" name="advancedFeatures">
+                            <subParameter array="true" classPath="java.lang.Integer" name="classParallelism"/>
+                            <subParameter array="true" classPath="java.lang.String" name="serverNames">
+                                <subParameter classPath="java.lang.String" name="serverTypesNames">
+                                    <value>Queue 0 - Server Type 1</value>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter array="true" classPath="java.lang.Integer" name="serversPerServerType">
+                                <subParameter classPath="java.lang.Integer" name="serverTypesNumOfServers">
+                                    <value>1</value>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter array="true" classPath="java.lang.Object" name="serverCompatibilities">
+                                <subParameter array="true" classPath="java.lang.Boolean" name="serverTypesCompatibilities"/>
+                            </subParameter>
+                            <subParameter classPath="java.lang.String" name="schedulingPolicy">
+                                <value>ALIS (Assign Longest Idle Server)</value>
+                            </subParameter>
+                            <subParameter classPath="NetStrategies.VacationStrategies.NoVacationStrategy" name="vacationStrategy"/>
+                        </parameter>
+                    </section>
+                    <section className="Router">
+                        <parameter array="true" classPath="NetStrategies.RoutingStrategy" name="RoutingStrategy"/>
+                    </section>
+                </node>
+                <node name="Queue 1">
+                    <classSoftDeadlines/>
+                    <quantumSize>
+                        <quantaSize>0.0</quantaSize>
+                    </quantumSize>
+                    <quantumSwitchoverTime>
+                        <quantumSwitchoverTime>0.0</quantumSwitchoverTime>
+                    </quantumSwitchoverTime>
+                    <section className="Queue">
+                        <parameter classPath="java.lang.Integer" name="size">
+                            <value>-1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.String" name="dropStrategies"/>
+                        <parameter classPath="NetStrategies.QueueGetStrategies.FCFSstrategy" name="FCFSstrategy"/>
+                        <parameter array="true" classPath="NetStrategies.QueuePutStrategy" name="QueuePutStrategy"/>
+                    </section>
+                    <section className="Server">
+                        <parameter classPath="java.lang.Integer" name="maxJobs">
+                            <value>1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.Integer" name="numberOfVisits"/>
+                        <parameter array="true" classPath="NetStrategies.ServiceStrategy" name="ServiceStrategy"/>
+                        <parameter classPath="java.util.HashMap" map="true" name="advancedFeatures">
+                            <subParameter array="true" classPath="java.lang.Integer" name="classParallelism"/>
+                            <subParameter array="true" classPath="java.lang.String" name="serverNames">
+                                <subParameter classPath="java.lang.String" name="serverTypesNames">
+                                    <value>Queue 1 - Server Type 1</value>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter array="true" classPath="java.lang.Integer" name="serversPerServerType">
+                                <subParameter classPath="java.lang.Integer" name="serverTypesNumOfServers">
+                                    <value>1</value>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter array="true" classPath="java.lang.Object" name="serverCompatibilities">
+                                <subParameter array="true" classPath="java.lang.Boolean" name="serverTypesCompatibilities"/>
+                            </subParameter>
+                            <subParameter classPath="java.lang.String" name="schedulingPolicy">
+                                <value>ALIS (Assign Longest Idle Server)</value>
+                            </subParameter>
+                            <subParameter classPath="NetStrategies.VacationStrategies.NoVacationStrategy" name="vacationStrategy"/>
+                        </parameter>
+                    </section>
+                    <section className="Router">
+                        <parameter array="true" classPath="NetStrategies.RoutingStrategy" name="RoutingStrategy"/>
+                    </section>
+                </node>
+                <node name="Join">
+                    <section className="Join">
+                        <parameter array="true" classPath="NetStrategies.JoinStrategy" name="JoinStrategy"/>
+                    </section>
+                    <section className="ServiceTunnel"/>
+                    <section className="Router">
+                        <parameter array="true" classPath="NetStrategies.RoutingStrategy" name="RoutingStrategy"/>
+                    </section>
+                </node>
+                <node name="Queue 3">
+                    <classSoftDeadlines/>
+                    <quantumSize>
+                        <quantaSize>0.0</quantaSize>
+                    </quantumSize>
+                    <quantumSwitchoverTime>
+                        <quantumSwitchoverTime>0.0</quantumSwitchoverTime>
+                    </quantumSwitchoverTime>
+                    <section className="Queue">
+                        <parameter classPath="java.lang.Integer" name="size">
+                            <value>-1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.String" name="dropStrategies"/>
+                        <parameter classPath="NetStrategies.QueueGetStrategies.FCFSstrategy" name="FCFSstrategy"/>
+                        <parameter array="true" classPath="NetStrategies.QueuePutStrategy" name="QueuePutStrategy"/>
+                    </section>
+                    <section className="Server">
+                        <parameter classPath="java.lang.Integer" name="maxJobs">
+                            <value>1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.Integer" name="numberOfVisits"/>
+                        <parameter array="true" classPath="NetStrategies.ServiceStrategy" name="ServiceStrategy"/>
+                        <parameter classPath="java.util.HashMap" map="true" name="advancedFeatures">
+                            <subParameter array="true" classPath="java.lang.Integer" name="classParallelism"/>
+                            <subParameter array="true" classPath="java.lang.String" name="serverNames">
+                                <subParameter classPath="java.lang.String" name="serverTypesNames">
+                                    <value>Queue 3 - Server Type 1</value>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter array="true" classPath="java.lang.Integer" name="serversPerServerType">
+                                <subParameter classPath="java.lang.Integer" name="serverTypesNumOfServers">
+                                    <value>1</value>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter array="true" classPath="java.lang.Object" name="serverCompatibilities">
+                                <subParameter array="true" classPath="java.lang.Boolean" name="serverTypesCompatibilities"/>
+                            </subParameter>
+                            <subParameter classPath="java.lang.String" name="schedulingPolicy">
+                                <value>ALIS (Assign Longest Idle Server)</value>
+                            </subParameter>
+                            <subParameter classPath="NetStrategies.VacationStrategies.NoVacationStrategy" name="vacationStrategy"/>
+                        </parameter>
+                    </section>
+                    <section className="Router">
+                        <parameter array="true" classPath="NetStrategies.RoutingStrategy" name="RoutingStrategy"/>
+                    </section>
+                </node>
+                <connection source="Fork_1" target="Queue 0"/>
+                <connection source="Fork_1" target="Queue 1"/>
+                <connection source="Queue 0" target="Join"/>
+                <connection source="Queue 1" target="Join"/>
+                <connection source="Join" target="Queue 3"/>
+            </sim>
+            <jmodel>
+                <station name="Fork_1">
+                    <position angle="0.0" rotate="false" x="50.0" y="110.0"/>
+                </station>
+                <station name="Queue 0">
+                    <position angle="0.0" rotate="false" x="200.0" y="60.0"/>
+                </station>
+                <station name="Queue 1">
+                    <position angle="0.0" rotate="false" x="200.0" y="160.0"/>
+                </station>
+                <station name="Join">
+                    <position angle="0.0" rotate="false" x="350.0" y="110.0"/>
+                </station>
+                <station name="Queue 3">
+                    <position angle="0.0" rotate="false" x="465.0" y="130.0"/>
+                </station>
+            </jmodel>
+        </archive>
+    </model>
+    <groups/>
+    <bindings/>
+</jsimgt>
