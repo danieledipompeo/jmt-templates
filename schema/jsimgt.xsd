@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <xs:simpleType name="kind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Source"/><xs:enumeration value="Sink"/><xs:enumeration value="Server"/>
+      <xs:enumeration value="Delay"/><xs:enumeration value="Router"/><xs:enumeration value="Fork"/>
+      <xs:enumeration value="Join"/><xs:enumeration value="ClassSwitch"/><xs:enumeration value="Logger"/>
+      <xs:enumeration value="Scaler"/><xs:enumeration value="Semaphore"/><xs:enumeration value="Terminal"/>
+      <xs:enumeration value="Place"/><xs:enumeration value="Transition"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="routing">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="equal"/><xs:enumeration value="roundrobin"/><xs:enumeration value="random"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="ident">
+    <xs:restriction base="xs:string"><xs:pattern value="[A-Za-z][A-Za-z0-9_]*"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:group name="items">
+    <xs:choice>
+      <xs:element name="station">
+        <xs:complexType>
+          <xs:attribute name="id" type="ident" use="required"/>
+          <xs:attribute name="kind" type="kind" use="required"/>
+          <xs:attribute name="name" type="xs:string"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="repeat">
+        <xs:complexType>
+          <xs:group ref="items" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:attribute name="id" type="ident" use="required"/>
+          <xs:attribute name="count" type="xs:string" use="required"/>
+          <xs:attribute name="index" type="ident" default="i"/>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="when">
+        <xs:complexType>
+          <xs:group ref="items" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:attribute name="test" type="xs:string" use="required"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:group>
+
+  <xs:element name="jsimgt">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="meta">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="author" type="xs:string"/>
+            <xs:attribute name="version" type="xs:string"/>
+            <xs:attribute name="date" type="xs:string"/>
+            <xs:attribute name="description" type="xs:string"/>
+            <xs:attribute name="tooltip" type="xs:string"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="image" type="xs:string" minOccurs="0"/>
+        <xs:element name="parameters" minOccurs="0">
+          <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+              <xs:element name="int">
+                <xs:complexType>
+                  <xs:attribute name="name" type="ident" use="required"/>
+                  <xs:attribute name="label" type="xs:string" use="required"/>
+                  <xs:attribute name="default" type="xs:integer" use="required"/>
+                  <xs:attribute name="min" type="xs:integer"/>
+                  <xs:attribute name="max" type="xs:integer"/>
+                  <xs:attribute name="optional" type="xs:boolean" default="false"/>
+                  <xs:attribute name="per" type="ident"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="choice">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="option" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:attribute name="value" type="ident" use="required"/>
+                        <xs:attribute name="label" type="xs:string"/>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="name" type="ident" use="required"/>
+                  <xs:attribute name="label" type="xs:string" use="required"/>
+                  <xs:attribute name="default" type="ident" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:choice>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="stations">
+          <xs:complexType>
+            <xs:group ref="items" minOccurs="0" maxOccurs="unbounded"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="connections" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="connect" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="from" type="xs:string" use="required"/>
+                  <xs:attribute name="to" type="xs:string" use="required"/>
+                  <xs:attribute name="routing" type="routing" default="equal"/>
+                  <xs:attribute name="when" type="xs:string"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="editors" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="edit" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:attribute name="target" type="xs:string" use="required"/>
+                  <xs:attribute name="label" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="required" fixed="1"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

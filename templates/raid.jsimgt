@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Re-creation of the official "RAID" template (levels 0, 1, 0+1, 1+0). RECONSTRUCTED from the original jar's labels
+     (Fork/Join, Primary/Mirror Device, Primary/Mirror Join, Storage), not from its source: please compare with the original. -->
+<jsimgt version="1">
+  <meta name="RAID" author="M Cazzoli" version="2.0" date="2026-11-24"
+        description="RAID 0, 1, 0+1 and 1+0 storage models" tooltip="a RAID model is created"/>
+  <parameters>
+    <choice name="level" label="RAID level" default="raid0">
+      <option value="raid0" label="Raid 0"/><option value="raid1" label="Raid 1"/>
+      <option value="raid01" label="Raid 0+1"/><option value="raid10" label="Raid 1+0"/>
+    </choice>
+    <int name="n" label="Number of Storage Devices" default="2" min="1" max="100"/>
+  </parameters>
+  <stations>
+    <station id="fork" kind="Fork" name="Fork"/>
+    <station id="join" kind="Join" name="Join"/>
+    <when test="${level} = raid0">
+      <repeat id="s0" count="${n}"><station id="stor" kind="Server" name="Storage ${i}"/></repeat>
+    </when>
+    <when test="${level} = raid1">
+      <station id="prim" kind="Server" name="Primary Device"/>
+      <station id="mirr" kind="Server" name="Mirror Device"/>
+    </when>
+    <when test="${level} = raid01">
+      <station id="pfork" kind="Fork" name="Primary Fork"/>
+      <repeat id="p" count="${n}"><station id="pdisk" kind="Server" name="Primary Disk ${i}"/></repeat>
+      <station id="pjoin" kind="Join" name="Primary Join"/>
+      <station id="mfork" kind="Fork" name="Mirror Fork"/>
+      <repeat id="m" count="${n}"><station id="mdisk" kind="Server" name="Mirror Disk ${i}"/></repeat>
+      <station id="mjoin" kind="Join" name="Mirror Join"/>
+    </when>
+    <when test="${level} = raid10">
+      <repeat id="s" count="${n}">
+        <station id="sfork" kind="Fork" name="Fork ${i}"/>
+        <station id="a" kind="Server" name="Primary Disk ${i}"/>
+        <station id="b" kind="Server" name="Mirror Disk ${i}"/>
+        <station id="sjoin" kind="Join" name="Join ${i}"/>
+      </repeat>
+    </when>
+  </stations>
+  <connections>
+    <connect from="fork" to="s0.stor"/>
+    <connect from="s0.stor" to="join"/>
+    <connect from="fork" to="prim"/><connect from="fork" to="mirr"/>
+    <connect from="prim" to="join"/><connect from="mirr" to="join"/>
+    <connect from="fork" to="pfork"/><connect from="pfork" to="p.pdisk"/><connect from="p.pdisk" to="pjoin"/><connect from="pjoin" to="join"/>
+    <connect from="fork" to="mfork"/><connect from="mfork" to="m.mdisk"/><connect from="m.mdisk" to="mjoin"/><connect from="mjoin" to="join"/>
+    <connect from="fork" to="s.sfork"/>
+    <connect from="s.sfork" to="s.a"/><connect from="s.sfork" to="s.b"/>
+    <connect from="s.a" to="s.sjoin"/><connect from="s.b" to="s.sjoin"/>
+    <connect from="s.sjoin" to="join"/>
+  </connections>
+  <editors>
+    <edit target="fork" label="Edit Fork"/>
+    <edit target="join" label="Edit Join"/>
+    <edit target="s0.stor" label="Edit Storage (RAID 0)"/>
+    <edit target="prim" label="Edit Primary Device"/>
+    <edit target="mirr" label="Edit Mirror Device"/>
+    <edit target="p.pdisk" label="Edit Primary Disk"/>
+    <edit target="m.mdisk" label="Edit Mirror Disk"/>
+    <edit target="s.a" label="Edit Primary Disk (1+0)"/>
+    <edit target="s.b" label="Edit Mirror Disk (1+0)"/>
+  </editors>
+</jsimgt>

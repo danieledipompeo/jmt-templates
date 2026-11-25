@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Re-creation of the official "Three Tier Intranet" template. Recovered from the original jar: 4 routers in a cycle
+     separating three tiers of server stations; routing equal inside each tier. NOT reproduced: the optional
+     finite-capacity region ("Max number of customers in the Intranet") because the format has no blocking regions yet;
+     processors per station and service times are set through the Edit buttons. -->
+<jsimgt version="1">
+  <meta name="Three Tier Intranet" author="M Cazzoli" version="2.0" date="2026-11-24"
+        description="Model of a three tier intranet" tooltip="a model of a three tiers intranet is created"/>
+  <parameters>
+    <int name="web" label="Number of presentation tier stations" default="1" min="1" max="50"/>
+    <int name="app" label="Number of application tier stations" default="1" min="1" max="50"/>
+    <int name="data" label="Number of data tier stations" default="1" min="1" max="50"/>
+  </parameters>
+  <stations>
+    <station id="r0" kind="Router" name="Router 0"/>
+    <repeat id="w" count="${web}"><station id="pres" kind="Server" name="presServer ${i}"/></repeat>
+    <station id="r1" kind="Router" name="Router 1"/>
+    <repeat id="a" count="${app}"><station id="appl" kind="Server" name="appServer ${i}"/></repeat>
+    <station id="r2" kind="Router" name="Router 2"/>
+    <repeat id="d" count="${data}"><station id="stor" kind="Server" name="storageServer ${i}"/></repeat>
+    <station id="r3" kind="Router" name="Router 3"/>
+  </stations>
+  <connections>
+    <connect from="r0" to="w.pres" routing="equal"/>
+    <connect from="w.pres" to="r1"/>
+    <connect from="r1" to="a.appl" routing="equal"/>
+    <connect from="a.appl" to="r2"/>
+    <connect from="r2" to="d.stor" routing="equal"/>
+    <connect from="d.stor" to="r3"/>
+    <connect from="r3" to="r0"/>
+  </connections>
+  <editors>
+    <edit target="w.pres" label="Edit Presentation tier"/>
+    <edit target="a.appl" label="Edit Application tier"/>
+    <edit target="d.stor" label="Edit Data tier"/>
+  </editors>
+</jsimgt>

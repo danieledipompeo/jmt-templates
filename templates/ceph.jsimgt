@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Re-creation of the official "Ceph" template. RECONSTRUCTED from the original jar's labels and connect pattern
+     (Source/Router/Network, Node i, OSD j; open or closed), not from its source: please compare with the original. -->
+<jsimgt version="1">
+  <meta name="Ceph" author="M Cazzoli" version="2.0" date="2026-11-24"
+        description="Model of a Ceph storage cluster" tooltip="a model of a Ceph cluster is created"/>
+  <parameters>
+    <choice name="mode" label="System type" default="open">
+      <option value="open" label="Open model"/><option value="closed" label="Closed model"/>
+    </choice>
+    <int name="nodes" label="Number of Nodes" default="2" min="1" max="50"/>
+    <int name="osds" label="OSDs for Node" default="2" min="1" max="50" per="node"/>
+  </parameters>
+  <stations>
+    <when test="${mode} = open"><station id="src" kind="Source" name="Source"/></when>
+    <station id="rt" kind="Router" name="Router"/>
+    <station id="net" kind="Delay" name="Network"/>
+    <repeat id="node" count="${nodes}">
+      <station id="n" kind="Server" name="Node ${i}"/>
+      <repeat id="osd" count="${osds}" index="j"><station id="d" kind="Server" name="OSD ${i}.${j}"/></repeat>
+    </repeat>
+    <when test="${mode} = open"><station id="snk" kind="Sink" name="Sink"/></when>
+  </stations>
+  <connections>
+    <connect from="src" to="rt"/>
+    <connect from="rt" to="net"/>
+    <connect from="net" to="node.n" routing="equal"/>
+    <connect from="node.n" to="node.osd.d" routing="equal"/>
+    <connect from="node.osd.d" to="snk"/>
+    <connect from="node.osd.d" to="rt" when="${mode} = closed"/>
+  </connections>
+  <editors>
+    <edit target="rt" label="Edit Router"/>
+    <edit target="net" label="Edit Network"/>
+    <edit target="node.n" label="Edit Node"/>
+    <edit target="node.osd.d" label="Edit OSD"/>
+  </editors>
+</jsimgt>

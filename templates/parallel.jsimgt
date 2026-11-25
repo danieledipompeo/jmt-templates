@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Re-creation of the official "Parallel" template: Fork -> N queue stations -> Join. Topology taken from the
+     original template source (jsimgraph.template.Template). -->
+<jsimgt version="1">
+  <meta name="Parallel" author="S Jiang" version="2.0" date="2026-11-24"
+        description="Model for parallel computations" tooltip="a model for parallel computations is created"/>
+  <parameters>
+    <int name="n" label="Number of queue stations" default="2" min="1" max="100"/>
+  </parameters>
+  <stations>
+    <station id="fork" kind="Fork" name="Fork"/>
+    <repeat id="q" count="${n}">
+      <station id="srv" kind="Server" name="Queue ${i}"/>
+    </repeat>
+    <station id="join" kind="Join" name="Join"/>
+  </stations>
+  <connections>
+    <connect from="fork" to="q.srv" routing="equal"/>
+    <connect from="q.srv" to="join"/>
+  </connections>
+  <editors>
+    <edit target="fork" label="Edit Fork"/>
+    <edit target="q.srv" label="Edit Queue"/>
+    <edit target="join" label="Edit Join"/>
+  </editors>
+</jsimgt>
