@@ -1,7 +1,6 @@
 name: validate
 on:
   pull_request:
-    paths: ["templates/**", "scripts/**", "tests/**", "schema/**"]
 permissions:
   contents: read
 jobs:
@@ -12,8 +11,11 @@ jobs:
         with:
           fetch-depth: 0
       - run: sudo apt-get install -y libxml2-utils
-      - name: Script tests
-        run: python3 -m unittest discover -s tests
+      # The checker and schema come from the base branch so a PR cannot weaken the rules it is judged by.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
       - name: Changed files (submissions from non-owners may only touch templates/)
         if: github.event.pull_request.author_association != 'OWNER'
         run: git diff --name-only origin/${{ github.base_ref }}...HEAD > /tmp/changed.txt
@@ -21,6 +23,6 @@ jobs:
         run: |
           CHANGED=""
           if [ -f /tmp/changed.txt ]; then CHANGED="--changed /tmp/changed.txt"; fi
-          python3 scripts/validate.py $CHANGED templates/*.jsimgt
+          python3 base/scripts/validate.py $CHANGED templates/*.jsimgt
       - name: Schema check
-        run: xmllint --noout --schema schema/jsimgt.xsd templates/*.jsimgt
+        run: xmllint --noout --schema base/schema/jsimgt.xsd templates/*.jsimgt

@@ -85,3 +85,11 @@ class IndexTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class WorkflowTest(unittest.TestCase):
+    def test_pr_validation_cannot_be_bypassed(self):
+        text = open(os.path.join(ROOT, ".github", "workflows", "validate.yml"), encoding="utf-8").read()
+        self.assertNotIn("paths:", text)  # every PR is validated
+        self.assertIn("base/scripts/validate.py", text)  # the base branch's checker runs, not the PR's own copy
+        self.assertIn("base/schema/jsimgt.xsd", text)
