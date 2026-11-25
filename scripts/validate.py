@@ -8,8 +8,9 @@ import xml.etree.ElementTree as ET
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}\.jsimgt$")
 MAX_BYTES = 1024 * 1024
 # the rules below mirror JMT's ModelGuard for the model embedded in version-2 templates
-CLASS_PATH = re.compile(r"java\.lang\.(Integer|Double|Boolean|String|Object|Long)|java\.util\.HashMap"
+CLASS_PATH = re.compile(r"java\.lang\.(Integer|Double|Float|Boolean|String|Object|Long)|java\.util\.HashMap"
                         r"|(jmt\.engine\.)?(NetStrategies|NodeSections|random|QueueNet)(\.[A-Za-z0-9_]+)+")
+FILE_PARAMETER = re.compile(r".*(file|path)(name)?", re.IGNORECASE)
 LOG_ATTRIBUTES = ("logPath", "logDelimiter", "logDecimalSeparator", "logReplaceMode")
 
 
@@ -59,7 +60,7 @@ def check_model(root):
             key = el.get("name", "")
             if key == "logfileName":
                 out += check_log_name(el, parents)
-            elif "file" in key.lower() or "path" in key.lower():
+            elif FILE_PARAMETER.fullmatch(key):
                 if any("".join(v.itertext()).strip() for v in el.iter("value")):
                     out.append("the model names a file or folder (%s)" % key)
     return out

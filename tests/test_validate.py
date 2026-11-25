@@ -124,6 +124,12 @@ class ValidateV2Test(unittest.TestCase):
             self.refused("<value>global.csv</value>", "<value>%s</value>" % bad, "may only write")
         self.refused("<value>global.csv</value>", "<value>global.csv<x/></value>", "may only write")
 
+    def test_fork_entries_and_class_switch_numbers_are_not_files_or_foreign_classes(self):
+        entry = ('<subParameter classPath="NetStrategies.ForkStrategies.OutPath" name="OutPathEntry"><value>S</value></subParameter>'
+                 '<subParameter classPath="java.lang.Float" name="cell"><value>1.0</value></subParameter>')
+        self.assertIn("</section>", V2)
+        self.assertEqual([], self.check(V2.replace("</section>", entry + "</section>", 1)))
+
     def test_markup(self):
         self.refused("<refClass>C</refClass>", "<refClass>&lt;html&gt;</refClass>", "markup")
 
