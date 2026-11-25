@@ -13,6 +13,9 @@ ROOT = os.path.join(os.path.dirname(__file__), "..")
 GOOD = open(os.path.join(ROOT, "templates", "parallel.jsimgt"), encoding="utf-8").read()
 
 
+V2 = open(os.path.join(ROOT, "tests", "fixtures", "queue-v2.jsimgt"), encoding="utf-8").read()
+
+
 def write(d, name, text):
     p = os.path.join(d, name)
     with open(p, "w", encoding="utf-8") as f:
@@ -81,6 +84,52 @@ class IndexTest(unittest.TestCase):
             self.assertEqual(hashlib.sha256(data).hexdigest(), e.get("sha256"))
             self.assertTrue(os.path.isfile(os.path.join(out, "templates", f)))
             self.assertTrue(e.get("name") and e.get("version"))
+
+
+class ValidateV2Test(unittest.TestCase):
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+
+    def check(self, text):
+        return validate.check([write(self.d, "x.jsimgt", text)])
+
+    def refused(self, old, new, reason, count=1):
+        self.assertIn(old, V2)
+        out = self.check(V2.replace(old, new, count))
+        self.assertTrue(any(reason in m for m in out), (reason, out))
+
+    def test_saved_template_passes(self):
+        self.assertEqual([], self.check(V2))
+
+    def test_foreign_classes(self):
+        self.refused('classPath="random.Exponential"', 'classPath="java.io.FileWriter"', "unexpected class")
+        self.refused('className="Server"', 'className="a.b.C"', "unexpected class")
+        self.refused('classPath="random.Exponential"', 'classPath="random.Replayer"', "trace")
+
+    def test_sections(self):
+        self.refused("</sim>", "</sim><results/>", "results")
+        self.refused("</sim>", "</sim><parametric/>", "parametric")
+        self.refused("</sim>", "</sim><sim/>", "exactly one model")
+        self.refused("</sim>", "</sim><other/>", "unexpected section")
+        self.refused("<model>", "<model><x/>", "exactly one archive")
+
+    def test_logging_and_files(self):
+        self.refused("<sim ", '<sim logPath="/tmp" ', "log option")
+        self.refused('verbose="false"', 'verbose="TRUE"', "logging")
+        self.refused('name="logJobID"', 'name="fileName"', "file or folder")
+        self.refused("<value/>", "<value>/tmp/</value>", "file or folder")
+
+    def test_logger_file_name(self):
+        for bad in ("../x.csv", ".bashrc", "other.csv"):
+            self.refused("<value>global.csv</value>", "<value>%s</value>" % bad, "may only write")
+        self.refused("<value>global.csv</value>", "<value>global.csv<x/></value>", "may only write")
+
+    def test_markup(self):
+        self.refused("<refClass>C</refClass>", "<refClass>&lt;html&gt;</refClass>", "markup")
+
+    def test_unknown_version(self):
+        out = self.check(V2.replace('<jsimgt version="2">', '<jsimgt version="3">'))
+        self.assertTrue(any("version" in m for m in out), out)
 
 
 if __name__ == "__main__":

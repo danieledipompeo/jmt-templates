@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jsimgt version="2">
+    <meta author="tester" date="2026-11-25" description="d" name="Logged queue" version="1.0"/>
+    <parameters>
+        <int default="2" label="Servers" max="8" min="1" name="n"/>
+        <int default="1" label="Cores" max="8" min="1" name="s"/>
+    </parameters>
+    <model>
+        <archive jmtVersion="1.5.0" name="Logged queue">
+            <sim disableStatisticStop="false" maxEvents="-1" maxSamples="1000000" name="Logged queue" polling="1.0">
+                <userClass name="C" priority="0" referenceSource="Src" softDeadline="0.0" type="open"/>
+                <node name="Src">
+                    <section className="RandomSource">
+                        <parameter array="true" classPath="NetStrategies.ServiceStrategy" name="ServiceStrategy">
+                            <refClass>C</refClass>
+                            <subParameter classPath="NetStrategies.ServiceStrategies.ServiceTimeStrategy" name="ServiceTimeStrategy">
+                                <subParameter classPath="random.Exponential" name="Exponential"/>
+                                <subParameter classPath="random.ExponentialPar" name="distrPar">
+                                    <subParameter classPath="java.lang.Double" name="lambda">
+                                        <value>0.5</value>
+                                    </subParameter>
+                                </subParameter>
+                            </subParameter>
+                        </parameter>
+                    </section>
+                    <section className="ServiceTunnel"/>
+                    <section className="Router">
+                        <parameter array="true" classPath="NetStrategies.RoutingStrategy" name="RoutingStrategy">
+                            <refClass>C</refClass>
+                            <subParameter classPath="NetStrategies.RoutingStrategies.RandomStrategy" name="Random"/>
+                        </parameter>
+                    </section>
+                </node>
+                <node name="S">
+                    <classSoftDeadlines>
+                        <softDeadline>0.0</softDeadline>
+                    </classSoftDeadlines>
+                    <quantumSize>
+                        <quantaSize>0.0</quantaSize>
+                    </quantumSize>
+                    <quantumSwitchoverTime>
+                        <quantumSwitchoverTime>0.0</quantumSwitchoverTime>
+                    </quantumSwitchoverTime>
+                    <section className="Queue">
+                        <parameter classPath="java.lang.Integer" name="size">
+                            <value>-1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.String" name="dropStrategies">
+                            <refClass>C</refClass>
+                            <subParameter classPath="java.lang.String" name="dropStrategy">
+                                <value>drop</value>
+                            </subParameter>
+                        </parameter>
+                        <parameter classPath="NetStrategies.QueueGetStrategies.FCFSstrategy" name="FCFSstrategy"/>
+                        <parameter array="true" classPath="NetStrategies.QueuePutStrategy" name="QueuePutStrategy">
+                            <refClass>C</refClass>
+                            <subParameter classPath="NetStrategies.QueuePutStrategies.TailStrategy" name="TailStrategy"/>
+                        </parameter>
+                    </section>
+                    <section className="Server">
+                        <parameter classPath="java.lang.Integer" name="maxJobs">
+                            <value>1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.Integer" name="numberOfVisits">
+                            <refClass>C</refClass>
+                            <subParameter classPath="java.lang.Integer" name="numberOfVisits">
+                                <value>1</value>
+                            </subParameter>
+                        </parameter>
+                        <parameter array="true" classPath="NetStrategies.ServiceStrategy" name="ServiceStrategy">
+                            <refClass>C</refClass>
+                            <subParameter classPath="NetStrategies.ServiceStrategies.ServiceTimeStrategy" name="ServiceTimeStrategy">
+                                <subParameter classPath="random.Exponential" name="Exponential"/>
+                                <subParameter classPath="random.ExponentialPar" name="distrPar">
+                                    <subParameter classPath="java.lang.Double" name="lambda">
+                                        <value>1.0</value>
+                                    </subParameter>
+                                </subParameter>
+                            </subParameter>
+                        </parameter>
+                        <parameter classPath="java.util.HashMap" map="true" name="advancedFeatures">
+                            <subParameter array="true" classPath="java.lang.Integer" name="classParallelism">
+                                <refClass>C</refClass>
+                                <subParameter classPath="java.lang.Integer" name="serverParallelism">
+                                    <value>1</value>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter array="true" classPath="java.lang.String" name="serverNames">
+                                <subParameter classPath="java.lang.String" name="serverTypesNames">
+                                    <value>S - Server Type 1</value>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter array="true" classPath="java.lang.Integer" name="serversPerServerType">
+                                <subParameter classPath="java.lang.Integer" name="serverTypesNumOfServers">
+                                    <value>1</value>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter array="true" classPath="java.lang.Object" name="serverCompatibilities">
+                                <subParameter array="true" classPath="java.lang.Boolean" name="serverTypesCompatibilities">
+                                    <subParameter classPath="java.lang.Boolean" name="compatibilities">
+                                        <value>true</value>
+                                    </subParameter>
+                                </subParameter>
+                            </subParameter>
+                            <subParameter classPath="java.lang.String" name="schedulingPolicy">
+                                <value>ALIS (Assign Longest Idle Server)</value>
+                            </subParameter>
+                            <subParameter classPath="NetStrategies.VacationStrategies.NoVacationStrategy" name="vacationStrategy"/>
+                        </parameter>
+                    </section>
+                    <section className="Router">
+                        <parameter array="true" classPath="NetStrategies.RoutingStrategy" name="RoutingStrategy">
+                            <refClass>C</refClass>
+                            <subParameter classPath="NetStrategies.RoutingStrategies.RandomStrategy" name="Random"/>
+                        </parameter>
+                    </section>
+                </node>
+                <node name="Out">
+                    <section className="JobSink"/>
+                </node>
+                <node name="Log">
+                    <section className="Queue">
+                        <parameter classPath="java.lang.Integer" name="size">
+                            <value>-1</value>
+                        </parameter>
+                        <parameter array="true" classPath="java.lang.String" name="dropStrategies">
+                            <refClass>C</refClass>
+                            <subParameter classPath="java.lang.String" name="dropStrategy">
+                                <value>drop</value>
+                            </subParameter>
+                        </parameter>
+                        <parameter classPath="NetStrategies.QueueGetStrategies.FCFSstrategy" name="FCFSstrategy"/>
+                        <parameter array="true" classPath="NetStrategies.QueuePutStrategy" name="QueuePutStrategy">
+                            <refClass>C</refClass>
+                            <subParameter classPath="NetStrategies.QueuePutStrategies.TailStrategy" name="TailStrategy"/>
+                        </parameter>
+                    </section>
+                    <section className="LogTunnel">
+                        <parameter classPath="java.lang.String" name="logfileName">
+                            <value>global.csv</value>
+                        </parameter>
+                        <parameter classPath="java.lang.String" name="logfilePath">
+                            <value/>
+                        </parameter>
+                        <parameter classPath="java.lang.Boolean" name="logExecTimestamp">
+                            <value>false</value>
+                        </parameter>
+                        <parameter classPath="java.lang.Boolean" name="logLoggerName">
+                            <value>true</value>
+                        </parameter>
+                        <parameter classPath="java.lang.Boolean" name="logTimeStamp">
+                            <value>true</value>
+                        </parameter>
+                        <parameter classPath="java.lang.Boolean" name="logJobID">
+                            <value>true</value>
+                        </parameter>
+                        <parameter classPath="java.lang.Boolean" name="logJobClass">
+                            <value>false</value>
+                        </parameter>
+                        <parameter classPath="java.lang.Boolean" name="logTimeSameClass">
+                            <value>false</value>
+                        </parameter>
+                        <parameter classPath="java.lang.Boolean" name="logTimeAnyClass">
+                            <value>false</value>
+                        </parameter>
+                        <parameter classPath="java.lang.Integer" name="numClasses">
+                            <value>1</value>
+                        </parameter>
+                    </section>
+                    <section className="Router">
+                        <parameter array="true" classPath="NetStrategies.RoutingStrategy" name="RoutingStrategy">
+                            <refClass>C</refClass>
+                            <subParameter classPath="NetStrategies.RoutingStrategies.RandomStrategy" name="Random"/>
+                        </parameter>
+                    </section>
+                </node>
+                <measure alpha="0.01" name="S_C_Response Time" nodeType="station" precision="0.03" referenceNode="S" referenceUserClass="C" type="Response Time" verbose="false"/>
+                <connection source="Src" target="S"/>
+                <connection source="S" target="Log"/>
+                <connection source="Log" target="Out"/>
+            </sim>
+            <jmodel>
+                <userClass color="#FF0000FF" name="C"/>
+                <station name="Src">
+                    <position angle="0.0" rotate="false" x="100.0" y="100.0"/>
+                </station>
+                <station name="S">
+                    <position angle="0.0" rotate="false" x="200.0" y="100.0"/>
+                </station>
+                <station name="Out">
+                    <position angle="0.0" rotate="false" x="300.0" y="100.0"/>
+                </station>
+                <station name="Log">
+                    <position angle="0.0" rotate="false" x="400.0" y="100.0"/>
+                </station>
+            </jmodel>
+        </archive>
+    </model>
+    <groups>
+        <group count="${n}" id="web">
+            <station name="S"/>
+        </group>
+    </groups>
+    <bindings>
+        <bind param="s" station="S" target="servers"/>
+    </bindings>
+</jsimgt>

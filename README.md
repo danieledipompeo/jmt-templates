@@ -10,7 +10,7 @@ description of a model that JMT turns into a canvas after asking for a few param
 ## Rules for a submission
 * One file, `templates/<slug>.jsimgt` (lower-case letters, digits and `-`, at most 64 characters).
 * The `<meta>` element has a unique name, an author, a version and a short description.
-* At most 1 MiB, valid against `schema/jsimgt.xsd`, no markup in texts. CI checks all of this.
+* At most 1 MiB, valid against `schema/jsimgt.xsd` (version 2: `schema/jsimgt2.xsd`), no markup in texts. Models saved from JSIMgraph (version 2) may not name files, folders or unexpected classes. CI checks all of this.
 * To update a template raise its `version`.
 * Every pull request is reviewed by a maintainer before it is merged; the index is then published automatically.
 

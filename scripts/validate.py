@@ -7,6 +7,62 @@ import xml.etree.ElementTree as ET
 
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}\.jsimgt$")
 MAX_BYTES = 1024 * 1024
+# the rules below mirror JMT's ModelGuard for the model embedded in version-2 templates
+CLASS_PATH = re.compile(r"java\.lang\.(Integer|Double|Boolean|String|Object|Long)|java\.util\.HashMap"
+                        r"|(jmt\.engine\.)?(NetStrategies|NodeSections|random|QueueNet)(\.[A-Za-z0-9_]+)+")
+LOG_ATTRIBUTES = ("logPath", "logDelimiter", "logDecimalSeparator", "logReplaceMode")
+
+
+def check_log_name(parameter, parents):
+    """A Logger may only write global.csv or a file named after its station."""
+    section = parents.get(parameter)
+    node = parents.get(section)
+    if section is None or node is None or section.get("className") != "LogTunnel":
+        return ["a log file name outside a Logger"]
+    station = node.get("name", "")
+    for v in parameter.iter("value"):
+        f = v.text or ""
+        if len(v) or f not in ("global.csv", station + ".csv") or f.startswith(".") or any(c in f for c in "/\\:"):
+            return ["the Logger '%s' may only write global.csv or a file named after itself" % station]
+    return []
+
+
+def check_model(root):
+    """Problems of the model embedded in a version-2 template."""
+    model = root.find("model")
+    if model is None or len(model) != 1 or model[0].tag != "archive":
+        return ["<model> must contain exactly one archive"]
+    archive = model[0]
+    out = []
+    tags = [c.tag for c in archive]
+    if any(t not in ("sim", "jmodel", "results") for t in tags):
+        out.append("unexpected section in the model")
+    if tags.count("sim") != 1 or tags.count("jmodel") > 1:
+        out.append("the file must contain exactly one model")
+    parents = {c: p for p in archive.iter() for c in p}
+    for el in archive.iter():
+        if el.tag in ("results", "parametric"):
+            out.append("%s are not allowed in a template" % el.tag)
+        if el.tag == "sim":
+            out += ["the model sets the log option %s" % a for a in LOG_ATTRIBUTES if el.get(a)]
+        class_path = el.get("classPath")
+        if class_path is not None:
+            if "Replayer" in class_path or "Trace" in class_path:
+                out.append("trace files cannot be part of a template")
+            elif not CLASS_PATH.fullmatch(class_path):
+                out.append("unexpected class '%s'" % class_path)
+        if el.get("className") is not None and not re.fullmatch("[A-Za-z]+", el.get("className")):
+            out.append("unexpected class '%s'" % el.get("className"))
+        if el.get("verbose", "").lower() == "true":
+            out.append("a performance index has logging switched on")
+        if el.tag in ("parameter", "subParameter"):
+            key = el.get("name", "")
+            if key == "logfileName":
+                out += check_log_name(el, parents)
+            elif "file" in key.lower() or "path" in key.lower():
+                if any("".join(v.itertext()).strip() for v in el.iter("value")):
+                    out.append("the model names a file or folder (%s)" % key)
+    return out
 
 
 def check_changed(names):
@@ -42,8 +98,13 @@ def check_file(path):
     for k in ("name", "author", "version"):
         if not meta.get(k, "").strip():
             problems.append("%s: <meta> needs a non-empty %s" % (name, k))
+    version = root.get("version")
+    if version == "2":
+        problems += ["%s: %s" % (name, m) for m in check_model(root)]
+    elif version != "1":
+        problems.append("%s: unknown version '%s'" % (name, version))
     for el in root.iter():
-        values = list(el.attrib.values()) + [el.text or ""]
+        values = list(el.attrib.values()) + [el.text or "", el.tail or ""]
         if any("<" in v for v in values):
             problems.append("%s: markup ('<') in text of <%s> is not allowed" % (name, el.tag))
             break

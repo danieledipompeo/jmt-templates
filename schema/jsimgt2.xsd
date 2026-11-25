@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- .jsimgt version 2: a JMT archive (vetted by ModelGuard, not by this schema) plus groups and bindings. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+  <xs:simpleType name="ident">
+    <xs:restriction base="xs:string"><xs:pattern value="[A-Za-z][A-Za-z0-9_]*"/></xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="target">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="servers"/><xs:enumeration value="population"/><xs:enumeration value="mean"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="jsimgt">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="meta">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+            <xs:attribute name="author" type="xs:string"/>
+            <xs:attribute name="version" type="xs:string"/>
+            <xs:attribute name="date" type="xs:string"/>
+            <xs:attribute name="description" type="xs:string"/>
+            <xs:attribute name="tooltip" type="xs:string"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="image" type="xs:string" minOccurs="0"/>
+        <xs:element name="parameters" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="int" minOccurs="0" maxOccurs="200">
+                <xs:complexType>
+                  <xs:attribute name="name" type="ident" use="required"/>
+                  <xs:attribute name="label" type="xs:string" use="required"/>
+                  <xs:attribute name="default" type="xs:int" use="required"/>
+                  <xs:attribute name="min" type="xs:int"/>
+                  <xs:attribute name="max" type="xs:int"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="model">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:any processContents="skip"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="groups" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="group" minOccurs="0" maxOccurs="200">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="station" maxOccurs="2000">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required"/>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="id" type="ident" use="required"/>
+                  <xs:attribute name="count" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="bindings" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="bind" minOccurs="0" maxOccurs="200">
+                <xs:complexType>
+                  <xs:attribute name="param" type="ident" use="required"/>
+                  <xs:attribute name="target" type="target" use="required"/>
+                  <xs:attribute name="station" type="xs:string"/>
+                  <xs:attribute name="class" type="xs:string"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string" use="required" fixed="2"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
